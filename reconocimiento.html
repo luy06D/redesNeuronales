@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  
+
+
+  <!-- Libreria ML5 -->
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+
+</head>
+<body>
+
+  <div id="resultado"></div>
+
+  <img src="./img/Mickey-mouse.png" alt="Una imagen cualquiera" id="imagenRandom">
+  
+
+  <script>
+    // console.log('ml5 version:', ml5.version);
+
+    // Referencia objeto ml5 (classification)
+    const classifier = ml5.imageClassifier('MobileNet', modelLoaded);
+    const imagenLeer = document.querySelector("#imagenRandom");
+    const resultado = document.querySelector("#resultado");
+
+
+    function modelLoaded(){
+      console.log("Model cargado correct");
+
+
+    }
+
+    // Clasificación / Identificacion / Lectura
+    classifier.classify(imagenLeer, (err, result) => {
+      if(!err) {
+        let content = ``;
+        let porcentaje1 = (100 * result[0].confidence).toFixed(2);
+        let porcentaje2 = (100 * result[1].confidence).toFixed(2);
+        let porcentaje3 = (100 * result[2].confidence).toFixed(2);
+
+        content += `Probabilidad #1: ${result[0].label}, confianza: ${porcentaje1} % <br />`;
+        content += `Probabilidad #2: ${result[1].label}, confianza: ${porcentaje2} % <br />`;
+        content += `Probabilidad #3: ${result[2].label}, confianza: ${porcentaje3}  % <br />`;
+
+        resultado.innerHTML = content;
+      }
+
+    });
+
+
+
+  </script>
+
+      
+
+
+  
+  
+</body>
+</html>

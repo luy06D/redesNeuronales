@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dibujando</title>
+  <link rel="stylesheet" href="./css/select.css">
+    <!-- P5 -->
+    <!-- Esta libreria nos permite interactuar con CANVAS, CAMARA, VIDEO multimedia -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js" integrity="sha512-bcfltY+lNLlNxz38yBBm/HLaUB1gTV6I0e+fahbF9pS6roIdzUytozWdnFV8ZnM6cSAG5EbmO0ag0a/fLZSG4Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+      <!-- ML5  -->
+      <!-- Machine Learning -->
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+</head>
+<body style="background-color: rgb(255, 255, 255);">
+
+  <div class="container">
+    <div class="img_container">
+      <img src="./img/carro.png" alt="" class="main" id="imagenRandom" >     
+    </div>
+    <div id="resultado"></div>
+
+    <div class="img_select ">
+      <img src="./img/carro.png" alt="" id="active" class="imgs">
+      <img src="./img/COCODRILO.png" alt="" id="active" class="imgs">
+      <img src="./img/elefan.png" alt="" id="active" class="imgs">
+    </div>
+
+  </div>
+
+  <script src="./js/jsselector.js"></script>
+
+  <script>
+
+    const lector = ml5.imageClassifier('MobileNet', modelLoaded);
+    const imagenLeer = document.querySelector("#imagenRandom");
+    const resultado = document.querySelector("#resultado");
+
+    function modelLoaded() {
+      console.log('Modelo cargado');
+    }
+
+    lector.classify(imagenLeer, (error, result) =>{
+      if(!error){
+        let contenido = ``;
+        let porcentaje1 = (100 * result[0].confidence).toFixed(2);
+        let porcentaje2 = (100 * result[1].confidence).toFixed(2);
+        let porcentaje3 = (100 * result[2].confidence).toFixed(2);
+
+        contenido += `Probabilidad #1: ${result[0].label}, confianza: ${porcentaje1} % <br />`;
+        contenido += `Probabilidad #2: ${result[1].label}, confianza: ${porcentaje2} % <br />`;
+        contenido += `Probabilidad #3: ${result[2].label}, confianza: ${porcentaje3}  % <br />`;
+
+        resultado.innerHTML = contenido;
+        
+      }
+
+    })
+    
+
+    
+  </script>
+
+
+
+
+
+
+
+  
+</body>
+</html>

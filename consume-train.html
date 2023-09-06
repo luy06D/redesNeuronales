@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+    <!-- libreria ml5 -->
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+
+    <!-- P5JS -->
+    <!--esta lobreria nos permite interactuar con canvas, camara, video(multimedia)-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body style="background-color: antiquewhite;">
+
+  <script>
+    //Objetos
+    let shapeClassifier;
+    let canvas;
+    let resultDiv;
+    let clearButton;
+    let inputImage;
+
+
+    function setup(){
+      canvas = createCanvas(400, 400);
+      background(255)
+
+      //Boton limpiar
+      clearButton = createButton('Limpiar');
+      clearButton.mousePressed(clearCanvas);
+
+      //Agregamos un div
+      resultDiv = createDiv('Cargando modelo....');
+      
+      //Objeto y la dimensión imagen analizar
+      inputImage = createGraphics(64,64);
+
+      //Configuracion para analizar la imagen
+      let options = {
+        inputs: [64,64,4],
+        task: 'imageClassification',
+      };
+
+      //Datos de nuestro modelo (x2Json + 1Bin)
+      const modelDetails = {
+        model: 'cerebro/model.json',
+        metadata: 'cerebro/model_meta.json',
+        weights: 'cerebro/model.weights.bin'
+      };
+
+      //Creamos nuestro objeto ML5
+      shapeClassifier = ml5.neuralNetwork(options);
+      shapeClassifier.load(modelDetails, modelLoaded);
+
+    }
+
+    function clearCanvas(){
+      background(255);
+    }
+
+    function modelLoaded(){
+      console.log('Modelo cargado');
+      classifyImage();
+    }
+
+    function classifyImage(){
+      inputImage.copy(canvas, 0,0,400,400,0,0,64,64);
+      shapeClassifier.classify({image: inputImage}, goResults);
+
+    
+    }
+    
+    //Entrega los resultados
+    function goResults(err , result){
+      if(!err){
+        let datos = ``;
+        datos += `Figura: ${result[0].label} <br/>`;
+        datos += `Confianza: ${result[0].confidence}`;
+        resultDiv.html(datos);
+
+        classifyImage();
+        
+      }
+
+
+    }
+
+    function draw(){
+      if(mouseIsPressed){
+        strokeWeight(8);
+        line(mouseX, mouseY, pmouseX, pmouseY);
+      }
+    }
+
+
+  </script>
+
+
+
+
+  
+</body>
+</html>

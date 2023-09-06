@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voces artificiales</title>
+</head>
+<body>
+
+  <form action="">
+    <div>
+      <label for="">Voces disponibles</label>
+    <select name="listavoces" id="listavoces">
+      <option value="">Seleccione</option>
+    </select>
+    </div>
+
+    <div>
+      <input type="text" placeholder="Escribe un texto" id="contenido" autocomplete="off">
+      <button type="button" id="hablar">Hablar</button>
+    </div>
+  </form>
+
+  <script>
+    // objetos 
+    let sintetizador = window.speechSynthesis;
+    let locutor;
+    let voces;
+    let listaVocesCargadas = false;
+
+    // Referencias
+
+    let slVoces = document.querySelector("#listavoces");
+    let contenido = document.querySelector("#contenido");
+    let hablar = document.querySelector("#hablar");
+
+
+    // Obtener la lista de voces y cargarla en SELECT
+    sintetizador.addEventListener('voiceschanged', function (){
+      if(!listaVocesCargadas){
+        // obtener la lista de voces
+        voces = sintetizador.getVoices();
+        
+        if(voces.length > 0 ){
+          voces.forEach(voz =>{
+            // creando un option para select
+          let optionVoz = document.createElement("option");
+          optionVoz.textContent = `${voz.name} - ${voz.lang}`;
+
+          // definiendo motor de voz predeterminado
+          if(voz.default){
+            optionVoz.selected = true
+          }
+
+          // Atributo personalizado
+          optionVoz.setAttribute("data-voz", voz.name);
+
+          // agregando al padre
+          slVoces.appendChild(optionVoz);
+
+          });
+        }
+
+        listaVocesCargadas = true;
+      }
+
+    });
+
+    // El aplicativo generara una voz artificial cuando se pulse click
+    hablar.addEventListener("click", function(){
+      // Controlamos el estado de "hablando"
+      if(sintetizador.speaking){
+        sintetizador.cancel();
+      }else{
+        const texto = contenido.value.trim();
+
+        // Construiremos un locutor
+
+        locutor = new SpeechSynthesisUtterance(texto);
+        locutor.voice = obtenerVoz(); //Motor
+        locutor.lang = locutor.voice.lang; //Idioma
+        locutor.rate = 1; //Tono
+        locutor.pitch = 1; //Velocidad
+
+        sintetizador.speak(locutor);
+      }
+    });
+
+    sintetizador.getVoices();
+
+    let obtenerVoz = function(){
+      //Identificamos la voz 
+      let vozElegida = slVoces.selectedOptions[0].getAttribute("data-voz");
+      // Voces es una matriz de objeto "SpeechSynthesisVoices" 
+      return voces.find(function (voz){
+        return voz.name == vozElegida;
+      })
+    }
+  </script>
+
+  
+</body>
+</html>
